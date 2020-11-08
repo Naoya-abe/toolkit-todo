@@ -1,5 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
+import { createSlice } from '@reduxjs/toolkit';
 
 interface TaskState {
   idCount: number;
@@ -37,7 +36,5 @@ export const taskSlice = createSlice({
 });
 
 export const { createTask, completeTask, deleteTask } = taskSlice.actions;
-
-export const selectTasks = (state: RootState) => state.task.tasks;
 
 export default taskSlice.reducer;
