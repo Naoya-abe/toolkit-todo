@@ -1,0 +1,16 @@
+.root {
+    background-color: #ffd5c9;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .wrapper {
+        height: 70vh;
+        width: 70vw;
+        border-radius: 10px;
+        background-color: #f1f2f7;
+        padding: 10px 40px;
+    }
+}
