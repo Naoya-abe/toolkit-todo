@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Modal from '@material-ui/core/Modal';
-import { completeTask, deleteTask, selectTask } from '../taskSlice';
+import {
+  completeTask,
+  deleteTask,
+  selectTask,
+  handleModalOpen,
+} from '../taskSlice';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import EventNoteIcon from '@material-ui/icons/EventNote';
+import { RootState } from '../../../app/store';
 import TaskForm from '../taskForm/TaskForm';
 import styles from './TaskItem.module.scss';
 
@@ -14,16 +20,16 @@ interface PropTypes {
 }
 
 const TaskItem: React.FC<PropTypes> = ({ task }) => {
-  const [open, setOpen] = useState(false);
+  const { isModalOpen } = useSelector((state: RootState) => state.task);
   const dispatch = useDispatch();
 
   const handleOpen = () => {
-    setOpen(true);
     dispatch(selectTask(task));
+    dispatch(handleModalOpen(true));
   };
 
   const handleClose = () => {
-    setOpen(false);
+    dispatch(handleModalOpen(false));
   };
 
   return (
@@ -48,7 +54,7 @@ const TaskItem: React.FC<PropTypes> = ({ task }) => {
           <DeleteIcon className={styles.icon} />
         </button>
       </div>
-      <Modal open={open} onClose={handleClose} className={styles.modal}>
+      <Modal open={isModalOpen} onClose={handleClose} className={styles.modal}>
         <div className={styles.modal_content}>
           <div className={styles.modal_title}>Edit Task Title</div>
           <TaskForm edit />
