@@ -1,33 +1,53 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
-import { createTask } from '../taskSlice';
+import { RootState } from '../../../app/store';
+import { createTask, editTask } from '../taskSlice';
 import styles from './TaskForm.module.scss';
 
 type Inputs = {
-  NewTask: string;
+  taskTitle: string;
 };
 
-const TaskForm: React.FC = () => {
+type PropTypes = {
+  edit?: boolean;
+};
+
+const TaskForm: React.FC<PropTypes> = ({ edit }) => {
   const dispatch = useDispatch();
+  const editData = useSelector((state: RootState) => state.task.selectedTask);
   const { register, handleSubmit, reset } = useForm<Inputs>();
 
-  const createNewTask = (data: Inputs) => {
-    dispatch(createTask(data.NewTask));
+  const handleCreate = (data: Inputs) => {
+    dispatch(createTask(data.taskTitle));
     reset();
+  };
+
+  const handleEdit = (data: Inputs) => {
+    const sendData = { ...editData, title: data.taskTitle };
+    dispatch(editTask(sendData));
   };
 
   return (
     <div className={styles.wrapper}>
-      <form onSubmit={handleSubmit(createNewTask)} className={styles.form}>
+      <form
+        onSubmit={!edit ? handleSubmit(handleCreate) : handleSubmit(handleEdit)}
+        className={styles.form}
+      >
         <TextField
-          label="New Task"
+          label={!edit ? 'New Task' : editData.title}
           variant="outlined"
           inputRef={register}
-          name="NewTask"
+          name="taskTitle"
           className={styles.text_field}
         />
+        {edit ? (
+          <div className={styles.button_wrapper}>
+            <button className={styles.submit_button}>Submit</button>
+            <button className={styles.cancel_button}>Cancel</button>
+          </div>
+        ) : null}
       </form>
     </div>
   );

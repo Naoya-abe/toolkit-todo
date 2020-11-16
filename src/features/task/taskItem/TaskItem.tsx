@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { completeTask, deleteTask } from '../taskSlice';
+import Modal from '@material-ui/core/Modal';
+import { completeTask, deleteTask, selectTask } from '../taskSlice';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import EventNoteIcon from '@material-ui/icons/EventNote';
+import TaskForm from '../taskForm/TaskForm';
 import styles from './TaskItem.module.scss';
 
 interface PropTypes {
@@ -11,7 +14,17 @@ interface PropTypes {
 }
 
 const TaskItem: React.FC<PropTypes> = ({ task }) => {
+  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
+
+  const handleOpen = () => {
+    setOpen(true);
+    dispatch(selectTask(task));
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -25,13 +38,22 @@ const TaskItem: React.FC<PropTypes> = ({ task }) => {
           onClick={() => dispatch(completeTask(task))}
           className={styles.checkbox}
         />
+        <button onClick={handleOpen} className={styles.edit_button}>
+          <EditIcon className={styles.icon} />
+        </button>
         <button
           onClick={() => dispatch(deleteTask(task))}
-          className={styles.button}
+          className={styles.delete_button}
         >
           <DeleteIcon className={styles.icon} />
         </button>
       </div>
+      <Modal open={open} onClose={handleClose} className={styles.modal}>
+        <div className={styles.modal_content}>
+          <div className={styles.modal_title}>Edit Task Title</div>
+          <TaskForm edit />
+        </div>
+      </Modal>
     </div>
   );
 };

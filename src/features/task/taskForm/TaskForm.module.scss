@@ -5,10 +5,37 @@
     .form {
         width: 100%;
         display: flex;
+        flex-direction: column;
 
         .text_field {
             width: 100%;
             margin-right: 10px;
+        }
+
+        .button_wrapper {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            margin-top: 20px;
+
+            .submit_button, .cancel_button {
+                width: 100%;
+                height: 40px;
+                font-weight: bold;
+                font-size: 15px;
+                border: none;
+                border-radius: 5px;
+            }
+            
+            .submit_button {
+                margin-bottom: 10px;
+                background-color: #ffd5c9;
+                color: #ffffff;
+            }
+
+            .cancel_button {
+                color: #282828;
+            }
         }
     }
 }

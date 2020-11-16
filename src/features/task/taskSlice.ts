@@ -3,11 +3,13 @@ import { createSlice } from '@reduxjs/toolkit';
 interface TaskState {
   idCount: number;
   tasks: { id: number; title: string; completed: boolean }[];
+  selectedTask: { id: number; title: string; completed: boolean };
 }
 
 const initialState: TaskState = {
   idCount: 1,
   tasks: [{ id: 1, title: 'Task A', completed: false }],
+  selectedTask: { id: 0, title: '', completed: false },
 };
 
 export const taskSlice = createSlice({
@@ -32,9 +34,25 @@ export const taskSlice = createSlice({
     deleteTask: (state, action) => {
       state.tasks = state.tasks.filter((t) => t.id !== action.payload.id);
     },
+    selectTask: (state, action) => {
+      state.selectedTask = action.payload;
+    },
+    editTask: (state, action) => {
+      console.log(action.payload);
+      const task = state.tasks.find((t) => t.id === action.payload.id);
+      if (task) {
+        task.title = action.payload.title;
+      }
+    },
   },
 });
 
-export const { createTask, completeTask, deleteTask } = taskSlice.actions;
+export const {
+  createTask,
+  completeTask,
+  deleteTask,
+  selectTask,
+  editTask,
+} = taskSlice.actions;
 
 export default taskSlice.reducer;

@@ -19,7 +19,8 @@
     .right_item {
         display: flex;
         align-items: center;
-        .button {
+        
+        .edit_button, .delete_button {
             border: none;
             border-radius: 5px;
             background-color: #f1f2f7;
@@ -29,6 +30,36 @@
                 width: 20px;
                 color: #282828;
             }
+        }
+
+        .edit_button {
+            margin-right: 5px;
+        }
+    }
+}
+
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .modal_content {
+        background: #FFFFFF;
+        width: 40vw;
+        height: 40vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 5px;
+        
+        &:focus {
+            outline: none;
+        }
+
+        .modal_title {
+            margin-bottom: 20px;
+            font-size: 20px;
         }
     }
 }
