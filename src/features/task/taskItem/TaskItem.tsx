@@ -20,11 +20,6 @@ interface PropTypes {
   task: { id: string; title: string; completed: boolean };
 }
 
-type editdata = {
-  id: string;
-  completed: boolean;
-};
-
 const TaskItem: React.FC<PropTypes> = ({ task }) => {
   const { isModalOpen } = useSelector((state: RootState) => state.task);
   const dispatch = useDispatch();
@@ -44,6 +39,11 @@ const TaskItem: React.FC<PropTypes> = ({ task }) => {
     dispatch(fetchTasks());
   };
 
+  const handleDelete = async (id: string) => {
+    await deleteTask(id);
+    dispatch(fetchTasks());
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.title}>
@@ -60,7 +60,7 @@ const TaskItem: React.FC<PropTypes> = ({ task }) => {
           <EditIcon className={styles.icon} />
         </button>
         <button
-          onClick={() => dispatch(deleteTask(task))}
+          onClick={() => handleDelete(task.id)}
           className={styles.delete_button}
         >
           <DeleteIcon className={styles.icon} />

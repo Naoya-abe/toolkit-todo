@@ -67,13 +67,21 @@ export const editTask = async (submitData: {
   }
 };
 
+/* ============================
+          Taskの削除
+============================ */
+export const deleteTask = async (id: string): Promise<void> => {
+  try {
+    await db.collection('tasks').doc(`${id}`).delete();
+  } catch (err) {
+    console.error('Error removing document: ', err);
+  }
+};
+
 export const taskSlice = createSlice({
   name: 'task',
   initialState,
   reducers: {
-    deleteTask: (state, action) => {
-      state.tasks = state.tasks.filter((t) => t.id !== action.payload.id);
-    },
     selectTask: (state, action) => {
       state.selectedTask = action.payload;
     },
@@ -89,7 +97,7 @@ export const taskSlice = createSlice({
   },
 });
 
-export const { deleteTask, selectTask, handleModalOpen } = taskSlice.actions;
+export const { selectTask, handleModalOpen } = taskSlice.actions;
 
 export const selectIdCount = (state: RootState): number => state.task.idCount;
 
