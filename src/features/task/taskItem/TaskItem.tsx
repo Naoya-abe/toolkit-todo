@@ -2,10 +2,11 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '@material-ui/core/Modal';
 import {
-  completeTask,
+  fetchTasks,
   deleteTask,
   selectTask,
   handleModalOpen,
+  editTask,
 } from '../taskSlice';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -18,6 +19,11 @@ import styles from './TaskItem.module.scss';
 interface PropTypes {
   task: { id: string; title: string; completed: boolean };
 }
+
+type editdata = {
+  id: string;
+  completed: boolean;
+};
 
 const TaskItem: React.FC<PropTypes> = ({ task }) => {
   const { isModalOpen } = useSelector((state: RootState) => state.task);
@@ -32,6 +38,12 @@ const TaskItem: React.FC<PropTypes> = ({ task }) => {
     dispatch(handleModalOpen(false));
   };
 
+  const handleEdit = async (id: string, title: string, completed: boolean) => {
+    const sendData = { id, title, completed: !completed };
+    await editTask(sendData);
+    dispatch(fetchTasks());
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.title}>
@@ -41,7 +53,7 @@ const TaskItem: React.FC<PropTypes> = ({ task }) => {
       <div className={styles.right_item}>
         <Checkbox
           checked={task.completed}
-          onClick={() => dispatch(completeTask(task))}
+          onClick={() => handleEdit(task.id, task.title, task.completed)}
           className={styles.checkbox}
         />
         <button onClick={handleOpen} className={styles.edit_button}>

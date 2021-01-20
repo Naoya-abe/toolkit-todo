@@ -16,7 +16,7 @@ const initialState: TaskState = {
 };
 
 /* ============================
-      Taskの全件取得
+        Taskの全件取得
 ============================ */
 export const fetchTasks = createAsyncThunk('task/getAllTasks', async () => {
   const res = await db.collection('tasks').get();
@@ -33,43 +33,49 @@ export const fetchTasks = createAsyncThunk('task/getAllTasks', async () => {
 /* ============================
           Taskの作成
 ============================ */
-export const createTask = createAsyncThunk(
-  'task/postTask',
-  async (submitData: { title: string; idCount: number }) => {
-    const { title, idCount } = submitData;
-    try {
-      await db
-        .collection('tasks')
-        .doc(`${idCount + 1}`)
-        .set({ title: title, completed: false });
-      return title;
-    } catch (err) {
-      console.error('Error writing document: ', err);
-    }
+export const createTask = async (submitData: {
+  title: string;
+  idCount: number;
+}): Promise<void> => {
+  const { title, idCount } = submitData;
+  try {
+    await db
+      .collection('tasks')
+      .doc(`${idCount + 1}`)
+      .set({ title: title, completed: false });
+  } catch (err) {
+    console.error('Error writing document: ', err);
   }
-);
+};
+
+/* ============================
+          Taskの編集
+============================ */
+export const editTask = async (submitData: {
+  id: string;
+  title: string;
+  completed: boolean;
+}): Promise<void> => {
+  const { id, title, completed } = submitData;
+  try {
+    await db
+      .collection('tasks')
+      .doc(`${id}`)
+      .set({ title: title, completed: completed });
+  } catch (err) {
+    console.error('Error writing document: ', err);
+  }
+};
 
 export const taskSlice = createSlice({
   name: 'task',
   initialState,
   reducers: {
-    completeTask: (state, action) => {
-      const task = state.tasks.find((t) => t.id === action.payload.id);
-      if (task) {
-        task.completed = !task.completed;
-      }
-    },
     deleteTask: (state, action) => {
       state.tasks = state.tasks.filter((t) => t.id !== action.payload.id);
     },
     selectTask: (state, action) => {
       state.selectedTask = action.payload;
-    },
-    editTask: (state, action) => {
-      const task = state.tasks.find((t) => t.id === action.payload.id);
-      if (task) {
-        task.title = action.payload.title;
-      }
     },
     handleModalOpen: (state, action) => {
       state.isModalOpen = action.payload;
@@ -80,26 +86,10 @@ export const taskSlice = createSlice({
       state.tasks = action.payload.allTasks;
       state.idCount = action.payload.taskNumber;
     });
-    builder.addCase(createTask.fulfilled, (state, action) => {
-      state.idCount++;
-      const newTask = {
-        id: String(state.idCount),
-        title: action.payload || '',
-        completed: false,
-      };
-      state.tasks = [...state.tasks, newTask];
-    });
   },
 });
 
-export const {
-  // createTask,
-  completeTask,
-  deleteTask,
-  selectTask,
-  editTask,
-  handleModalOpen,
-} = taskSlice.actions;
+export const { deleteTask, selectTask, handleModalOpen } = taskSlice.actions;
 
 export const selectIdCount = (state: RootState): number => state.task.idCount;
 

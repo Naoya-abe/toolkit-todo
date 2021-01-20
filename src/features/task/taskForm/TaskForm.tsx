@@ -26,16 +26,22 @@ const TaskForm: React.FC<PropTypes> = ({ edit }) => {
   const idCount = useSelector(selectIdCount);
   const { register, handleSubmit, reset } = useForm<Inputs>();
 
-  const handleCreate = (data: Inputs) => {
+  const handleCreate = async (data: Inputs) => {
     const submitData = { title: data.taskTitle, idCount: idCount };
-    dispatch(createTask(submitData));
+    await createTask(submitData);
     reset();
+    dispatch(fetchTasks());
   };
 
-  const handleEdit = (data: Inputs) => {
-    const sendData = { ...editData, title: data.taskTitle };
-    dispatch(editTask(sendData));
+  const handleEdit = async (data: Inputs) => {
+    const sendData = {
+      id: editData.id,
+      title: data.taskTitle,
+      completed: editData.completed,
+    };
+    await editTask(sendData);
     dispatch(handleModalOpen(false));
+    dispatch(fetchTasks());
   };
 
   return (
