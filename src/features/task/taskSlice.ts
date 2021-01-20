@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 import { db } from '../../firebase';
 interface TaskState {
   idCount: number;
@@ -9,8 +10,8 @@ interface TaskState {
 
 const initialState: TaskState = {
   idCount: 1,
-  tasks: [{ id: 'ifjairo', title: 'Task A', completed: false }],
-  selectedTask: { id: 'fjiaeohjr', title: '', completed: false },
+  tasks: [],
+  selectedTask: { id: '0', title: '', completed: false },
   isModalOpen: false,
 };
 
@@ -34,11 +35,16 @@ export const fetchTasks = createAsyncThunk('task/getAllTasks', async () => {
 ============================ */
 export const createTask = createAsyncThunk(
   'task/postTask',
-  async (title: string) => {
+  async (submitData: { title: string; idCount: number }) => {
+    const { title, idCount } = submitData;
     try {
-      await db.collection('tasks').add({ title: title, completed: false });
+      await db
+        .collection('tasks')
+        .doc(`${idCount + 1}`)
+        .set({ title: title, completed: false });
+      return title;
     } catch (err) {
-      console.error('Error adding document: ', err);
+      console.error('Error writing document: ', err);
     }
   }
 );
@@ -47,15 +53,6 @@ export const taskSlice = createSlice({
   name: 'task',
   initialState,
   reducers: {
-    // createTask: (state, action) => {
-    //   state.idCount++;
-    //   const newTask = {
-    //     id: state.idCount,
-    //     title: action.payload,
-    //     completed: false,
-    //   };
-    //   state.tasks = [newTask, ...state.tasks];
-    // },
     completeTask: (state, action) => {
       const task = state.tasks.find((t) => t.id === action.payload.id);
       if (task) {
@@ -83,6 +80,15 @@ export const taskSlice = createSlice({
       state.tasks = action.payload.allTasks;
       state.idCount = action.payload.taskNumber;
     });
+    builder.addCase(createTask.fulfilled, (state, action) => {
+      state.idCount++;
+      const newTask = {
+        id: String(state.idCount),
+        title: action.payload || '',
+        completed: false,
+      };
+      state.tasks = [...state.tasks, newTask];
+    });
   },
 });
 
@@ -94,5 +100,7 @@ export const {
   editTask,
   handleModalOpen,
 } = taskSlice.actions;
+
+export const selectIdCount = (state: RootState): number => state.task.idCount;
 
 export default taskSlice.reducer;

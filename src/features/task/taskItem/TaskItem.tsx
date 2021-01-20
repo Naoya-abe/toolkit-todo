@@ -16,7 +16,7 @@ import TaskForm from '../taskForm/TaskForm';
 import styles from './TaskItem.module.scss';
 
 interface PropTypes {
-  task: { id: number; title: string; completed: boolean };
+  task: { id: string; title: string; completed: boolean };
 }
 
 const TaskItem: React.FC<PropTypes> = ({ task }) => {
