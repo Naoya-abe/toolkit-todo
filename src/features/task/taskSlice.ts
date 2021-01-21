@@ -1,17 +1,22 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import firebase from 'firebase/app';
 import { RootState } from '../../app/store';
 import { db } from '../../firebase';
 interface TaskState {
   idCount: number;
   tasks: { id: string; title: string; completed: boolean }[];
-  selectedTask: { id: string; title: string; completed: boolean };
+  selectedTask: {
+    id: string;
+    title: string;
+    completed: boolean;
+  };
   isModalOpen: boolean;
 }
 
 const initialState: TaskState = {
   idCount: 1,
   tasks: [],
-  selectedTask: { id: '0', title: '', completed: false },
+  selectedTask: { id: '', title: '', completed: false },
   isModalOpen: false,
 };
 
@@ -19,7 +24,7 @@ const initialState: TaskState = {
         Taskの全件取得
 ============================ */
 export const fetchTasks = createAsyncThunk('task/getAllTasks', async () => {
-  const res = await db.collection('tasks').get();
+  const res = await db.collection('tasks').orderBy('dateTime', 'desc').get();
   const allTasks = res.docs.map((doc) => ({
     id: doc.id,
     title: doc.data().title,
@@ -33,16 +38,12 @@ export const fetchTasks = createAsyncThunk('task/getAllTasks', async () => {
 /* ============================
           Taskの作成
 ============================ */
-export const createTask = async (submitData: {
-  title: string;
-  idCount: number;
-}): Promise<void> => {
-  const { title, idCount } = submitData;
+export const createTask = async (title: string): Promise<void> => {
   try {
+    const dateTime = firebase.firestore.Timestamp.fromDate(new Date());
     await db
       .collection('tasks')
-      .doc(`${idCount + 1}`)
-      .set({ title: title, completed: false });
+      .add({ title: title, completed: false, dateTime });
   } catch (err) {
     console.error('Error writing document: ', err);
   }
@@ -57,11 +58,12 @@ export const editTask = async (submitData: {
   completed: boolean;
 }): Promise<void> => {
   const { id, title, completed } = submitData;
+  const dateTime = firebase.firestore.Timestamp.fromDate(new Date());
   try {
     await db
       .collection('tasks')
-      .doc(`${id}`)
-      .set({ title: title, completed: completed });
+      .doc(id)
+      .set({ title, completed, dateTime }, { merge: true });
   } catch (err) {
     console.error('Error writing document: ', err);
   }
@@ -72,7 +74,7 @@ export const editTask = async (submitData: {
 ============================ */
 export const deleteTask = async (id: string): Promise<void> => {
   try {
-    await db.collection('tasks').doc(`${id}`).delete();
+    await db.collection('tasks').doc(id).delete();
   } catch (err) {
     console.error('Error removing document: ', err);
   }

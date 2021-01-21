@@ -12,17 +12,17 @@ const App: React.FC = (props: any) => {
   const dispatch: AppDispatch = useDispatch();
 
   useEffect(() => {
-    const unSub = auth.onAuthStateChanged((user) => {
-      !user && props.history.push('user-auth');
-    });
-    return () => unSub();
+    const unSub = async () => {
+      await dispatch(fetchTasks());
+    };
+    unSub();
   }, []);
 
   useEffect(() => {
-    const unSub = () => {
-      dispatch(fetchTasks());
-    };
-    return () => unSub();
+    const unSub = auth.onAuthStateChanged((user) => {
+      !user && props.history.push('user-auth');
+    });
+    unSub();
   }, []);
 
   return (

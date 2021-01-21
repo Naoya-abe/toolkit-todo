@@ -8,7 +8,6 @@ import {
   fetchTasks,
   editTask,
   handleModalOpen,
-  selectIdCount,
 } from '../taskSlice';
 import styles from './TaskForm.module.scss';
 
@@ -23,12 +22,10 @@ type PropTypes = {
 const TaskForm: React.FC<PropTypes> = ({ edit }) => {
   const dispatch = useDispatch();
   const editData = useSelector((state: RootState) => state.task.selectedTask);
-  const idCount = useSelector(selectIdCount);
   const { register, handleSubmit, reset } = useForm<Inputs>();
 
   const handleCreate = async (data: Inputs) => {
-    const submitData = { title: data.taskTitle, idCount: idCount };
-    await createTask(submitData);
+    await createTask(data.taskTitle);
     reset();
     dispatch(fetchTasks());
   };

@@ -80,7 +80,7 @@ const UserAuth: React.FC = (props: any) => {
     const unSub = auth.onAuthStateChanged((user) => {
       user && props.history.push('/');
     });
-    return () => unSub();
+    unSub();
   }, [props.history]);
 
   return (
