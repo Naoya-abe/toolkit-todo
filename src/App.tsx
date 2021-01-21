@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
 import TaskList from './features/task/taskList/TaskList';
 import Header from './components/header/Header';
 import styles from './App.module.scss';
@@ -8,7 +9,7 @@ import { fetchTasks } from './features/task/taskSlice';
 import TaskForm from './features/task/taskForm/TaskForm';
 import { auth } from './firebase';
 
-const App: React.FC = (props: any) => {
+const App: React.FC<RouteComponentProps> = (props) => {
   const dispatch: AppDispatch = useDispatch();
 
   useEffect(() => {
@@ -28,7 +29,7 @@ const App: React.FC = (props: any) => {
   return (
     <div className={styles.root}>
       <div className={styles.wrapper}>
-        <Header />
+        <Header history={props.history} />
         <TaskForm />
         <TaskList />
       </div>

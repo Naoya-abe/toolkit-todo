@@ -5,17 +5,17 @@ import App from './App';
 import { store } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
-import { Route, BrowserRouter } from 'react-router-dom';
+import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import UserAuth from './pages/userAuth/UserAuth';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <>
+        <Switch>
           <Route exact path="/" component={App} />
           <Route exact path="/user-auth" component={UserAuth} />
-        </>
+        </Switch>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>,
