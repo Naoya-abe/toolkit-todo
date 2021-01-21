@@ -6,15 +6,25 @@ import styles from './App.module.scss';
 import { AppDispatch } from './app/store';
 import { fetchTasks } from './features/task/taskSlice';
 import TaskForm from './features/task/taskForm/TaskForm';
+import { auth } from './firebase';
 
-const App: React.FC = () => {
+const App: React.FC = (props: any) => {
   const dispatch: AppDispatch = useDispatch();
+
   useEffect(() => {
-    const unSub = async () => {
-      await dispatch(fetchTasks());
-    };
-    unSub();
+    const unSub = auth.onAuthStateChanged((user) => {
+      !user && props.history.push('user-auth');
+    });
+    return () => unSub();
   }, []);
+
+  useEffect(() => {
+    const unSub = () => {
+      dispatch(fetchTasks());
+    };
+    return () => unSub();
+  }, []);
+
   return (
     <div className={styles.root}>
       <div className={styles.wrapper}>
